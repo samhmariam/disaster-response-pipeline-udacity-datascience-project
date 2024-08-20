@@ -7,7 +7,7 @@
 In this project, will analyze disaster data and build a model for an API that classifies disaster messages.
 
     - GitHub Repository
-      [Repo Link](https://github.com/samhmariam/disaster-response-pipeline-udacity-datascience-project)
+      [Link](https://github.com/samhmariam/disaster-response-pipeline-udacity-datascience-project)
 
 ### Project Steps
 
