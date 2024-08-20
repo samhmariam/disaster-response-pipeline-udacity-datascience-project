@@ -1,26 +1,10 @@
-'''
-
-    - To run ETL pipeline that cleans data and stores in 
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
-    - Arguments:
-        - messages_filepath: path to csv file containing messages
-        - categories_filepath: path to csv file containing categories
-        - database_filepath: path to SQLite database to save clean data to
-    
-    - Output:
-        - SQLite database containing a merged and cleaned version of the messages and categories data
-
-    
-'''
-
 import sys
+import os
 import pandas as pd
 from sqlalchemy import create_engine
 
 
-
 def load_data(messages_filepath, categories_filepath):
-
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, on='id')
@@ -29,40 +13,39 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    # create a dataframe of the 36 individual category columns
+    categories = df['categories'].str.split(';', expand=True)
         
-        # create a dataframe of the 36 individual category columns
-        categories = df['categories'].str.split(';', expand=True)
+    # select the first row of the categories dataframe
+    row = categories.iloc[0]
         
-        # select the first row of the categories dataframe
-        row = categories.iloc[0]
+    # use this row to extract a list of new column names for categories
+    category_colnames = row.apply(lambda x: x[:-2])
         
-        # use this row to extract a list of new column names for categories
-        category_colnames = row.apply(lambda x: x[:-2])
+    # rename the columns of `categories`
+    categories.columns = category_colnames
         
-        # rename the columns of `categories`
-        categories.columns = category_colnames
+    # convert category values to just numbers 0 or 1
+    for column in categories:
+        categories[column] = categories[column].apply(lambda x: x[-1])
+        categories[column] = categories[column].astype(int)
         
-        # convert category values to just numbers 0 or 1
-        for column in categories:
-            categories[column] = categories[column].apply(lambda x: x[-1])
-            categories[column] = categories[column].astype(int)
+    # drop the original categories column from `df`
+    df.drop('categories', axis=1, inplace=True)
         
-        # drop the original categories column from `df`
-        df.drop('categories', axis=1, inplace=True)
+    # concatenate the original dataframe with the new `categories` dataframe
+    df = pd.concat([df, categories], axis=1)
         
-        # concatenate the original dataframe with the new `categories` dataframe
-        df = pd.concat([df, categories], axis=1)
+    # drop duplicates
+    df.drop_duplicates(inplace=True)
         
-        # drop duplicates
-        df.drop_duplicates(inplace=True)
-        
-        return df
+    return df
 
 
 def save_data(df, database_filename):
-    
-    engine = create_engine('sqlite:///./data/' + database_filename)
-    df.to_sql('DisasterResponse', engine, index=False, if_exists='replace')  
+    database_url = f"sqlite:///{database_filename}"
+    engine = create_engine(database_url)
+    df.to_sql('classified_msgs', engine, index_label='id', index=False, if_exists='replace')  
 
 
 def main():
