@@ -29,6 +29,7 @@ def clean_data(df):
     for column in categories:
         categories[column] = categories[column].apply(lambda x: x[-1])
         categories[column] = categories[column].astype(int)
+        categories[column] = categories[column].apply(lambda x: 1 if x == '1' else 0)
         
     # drop the original categories column from `df`
     df.drop('categories', axis=1, inplace=True)
