@@ -65,7 +65,31 @@ def index():
             }
         }
     ]
+    # create additional visuals
+   
+    category_counts = df.iloc[:, 4:].sum().sort_values(ascending=False)
+    category_names = list(category_counts.index)
     
+    graphs.append(
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        }
+    )
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)

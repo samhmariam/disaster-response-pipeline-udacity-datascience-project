@@ -1,8 +1,13 @@
 # Disaster Response Ppipeline
 
+
+
 ## Project Overview
 
 In this project, will analyze disaster data and build a model for an API that classifies disaster messages.
+
+    - GitHub Repository
+      [Repo Link][https://github.com/samhmariam/disaster-response-pipeline-udacity-datascience-project]
 
 ### Project Steps
 
@@ -21,3 +26,4 @@ In this project, will analyze disaster data and build a model for an API that cl
     `python run.py`
 
     ![Disaster Dashboard landing page](./image/disaster-response-landing-page.png)
+    ![Additional Visuals](./image/additional-visuals-landing-page.png)
